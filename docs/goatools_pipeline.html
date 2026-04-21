@@ -1,0 +1,60 @@
+Python 3.8+
+GOATOOLS 1.6+
+Fisher's exact test
+Klopfenstein et al. 2018
+GO Term Enrichment Pipeline
+for DE × AS Overlap Genes
+Metrosideros polymorpha common-garden RNA-seq — Drought × Waterlogging comparisons (L vs I, L vs T, T vs I)
+
+Pipeline steps
+STEP 01
+Prepare annotation file (gene2go.txt)
+▼
+Convert the OmicsBox export to a two-column header-free TSV mapping each gene to one GO term per row. This becomes the background population for Fisher's exact tests.
+
+import pandas as pd
+df = pd.read_csv("protcleanomicsbox_export.txt", sep="\t")
+df[
+  ["Sequence Name", "Annotation GO ID"]
+].to_csv("gene2go.txt", sep="\t", index=False, header=False)
+# → 180,137 rows | 20,253 annotated genes | 7,209 GO terms
+STEP 02
+Download GO OBO ontology file
+▼
+STEP 03
+Define study gene lists
+▼
+STEP 04
+Load DAG and run GOEnrichmentStudy
+▼
+STEP 05
+Apply multiple-testing correction
+▼
+STEP 06
+Parse and split results by namespace
+▼
+Output files
+{contrast}_GO_all.tsv
+All tested GO terms with raw + FDR-corrected p-values
+{contrast}_GO_significant.tsv
+Significant terms passing threshold (all namespaces)
+{contrast}_GO_significant_BP.tsv
+Biological process terms only
+{contrast}_GO_significant_MF.tsv
+Molecular function terms only
+{contrast}_GO_significant_CC.tsv
+Cellular component terms only
+GO_enrichment_summary.tsv
+Cross-contrast count summary table
+Note on small study sets. With 11–15 annotated genes per contrast, FDR correction (Benjamini-Hochberg) is conservative and may yield 0 significant terms. Consider reporting nominal p < 0.05 with —method none, and note this explicitly in your methods section.
+Dependencies
+goatools
+pandas
+scipy
+statsmodels
+pip install goatools pandas scipy statsmodels
+Citation
+PRIMARY
+Klopfenstein DV et al. (2018) GOATOOLS: A Python library for Gene Ontology analyses. Scientific Reports, 8, 10872. https://doi.org/10.1038/s41598-018-28948-z
+GO DATABASE
+Gene Ontology Consortium (2023) The Gene Ontology knowledgebase in 2023. Genetics, 224(1). https://doi.org/10.1093/genetics/iyad031
